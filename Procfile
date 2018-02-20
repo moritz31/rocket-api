@@ -1,1 +1,1 @@
-web: java -jar build/libs/rocket-api-1.0-SNAPSHOT.jar
+web: gradle run
