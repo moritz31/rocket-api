@@ -18,7 +18,8 @@ object server : PropertyGroup() {
 
 fun main(args: Array<String>) {
 
-    val config = ConfigurationProperties.fromResource("default.conf")
+    val config = EnvironmentVariables() overriding
+                 ConfigurationProperties.fromResource("default.conf")
 
     Database.connect(
             url = "jdbc:sqlserver://${config[server.url]}:${config[server.port]};databaseName=${config[server.databaseName]}",
