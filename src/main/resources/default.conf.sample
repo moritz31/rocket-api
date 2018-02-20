@@ -1,0 +1,24 @@
+/**
+
+*/
+server.url = example.com
+
+/**
+
+*/
+server.port = 1433
+
+/**
+
+*/
+server.databaseName = exampleDB
+
+/**
+
+*/
+server.username = example
+
+/**
+
+*/
+server.password = password
