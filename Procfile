@@ -1,1 +1,1 @@
-web: gradle run
+web: ./build/install/rocket-api/bin/rocket-api
