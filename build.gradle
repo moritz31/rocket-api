@@ -33,4 +33,4 @@ dependencies {
     compile 'com.natpryce:konfig:1.6.1.0'
 }
 
-task stage(dependsOn: ['installDist'])
+task stage(dependsOn: ['build'])
