@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import com.natpryce.konfig.*
+import java.util.stream.Collectors
 
 object server : PropertyGroup() {
     val port by intType
@@ -35,7 +36,7 @@ fun main(args: Array<String>) {
 
     }
 
-    val app = Javalin.start(7000)
+    val app = Javalin.start(8080)
     app.get("/") { ctx -> ctx.result("Hello World") }
 
     app.get("/flights") {
@@ -43,7 +44,6 @@ fun main(args: Array<String>) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
             val flights = Flights.all()
-
         }
     }
 }
