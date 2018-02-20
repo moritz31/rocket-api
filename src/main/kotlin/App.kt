@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
 
     }
 
-    val app = Javalin.start(8080)
+    val app = Javalin.start(getHerokuPort())
     app.get("/") { ctx -> ctx.result("Hello World") }
 
     app.get("/flights") {
@@ -46,4 +46,13 @@ fun main(args: Array<String>) {
             val flights = Flights.all()
         }
     }
+}
+
+fun getHerokuPort(): Int {
+    val processBuilder = ProcessBuilder()
+    if (processBuilder.environment().get("PORT") != null) {
+        return Integer.parseInt(processBuilder.environment().get("PORT"))
+    }
+
+    return 8080
 }
