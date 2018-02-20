@@ -1,12 +1,10 @@
 package main.kotlin
 
-import com.beust.klaxon.Klaxon
 import io.javalin.Javalin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import com.natpryce.konfig.*
-import java.util.stream.Collectors
 
 object server : PropertyGroup() {
     val port by intType
@@ -18,8 +16,15 @@ object server : PropertyGroup() {
 
 fun main(args: Array<String>) {
 
-    val config = EnvironmentVariables() overriding
-                 ConfigurationProperties.fromResource("default.conf")
+    var config: Configuration
+
+    try {
+        config = EnvironmentVariables() overriding
+                ConfigurationProperties.fromResource("default.conf")
+    } catch (e: Misconfiguration) {
+        e.printStackTrace()
+        config = EnvironmentVariables()
+    }
 
     Database.connect(
             url = "jdbc:sqlserver://${config[server.url]}:${config[server.port]};databaseName=${config[server.databaseName]}",
