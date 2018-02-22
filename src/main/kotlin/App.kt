@@ -1,10 +1,10 @@
 package main.kotlin
 
 import io.javalin.Javalin
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import com.natpryce.konfig.*
+import model.*
+import org.jetbrains.exposed.sql.*
 
 object server : PropertyGroup() {
     val port by intType
@@ -32,12 +32,16 @@ fun main(args: Array<String>) {
             password = config[server.password],
             driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver")
 
+
+    val flightData = FlightDAO()
+
     transaction {
         logger.addLogger(StdOutSqlLogger)
-        val flights = Flights.all()
-        for(f in flights) {
-            System.out.println(f.name)
-            System.out.println(f.time)
+
+
+        (Flight innerJoin Site innerJoin Vehicle)
+                .selectAll().forEach {
+            println("${it[Flight.name]} - ${it[Site.name]} - ${it[Vehicle.name]} - ${it[Flight.time]}")
         }
 
     }
@@ -45,12 +49,12 @@ fun main(args: Array<String>) {
     val app = Javalin.start(getHerokuPort())
     app.get("/") { ctx -> ctx.result("Hello World") }
 
-    app.get("/flights") {
-        ctx -> ctx.result("Flight data")
-        transaction {
-            logger.addLogger(StdOutSqlLogger)
-            val flights = Flights.all()
-        }
+    app.get("/flights") { ctx ->
+        ctx.json(flightData.flights)
+    }
+
+    app.get("/flights/:id") { ctx ->
+        ctx.json(flightData.findById(ctx.param("id")!!.toInt())!!)
     }
 }
 
