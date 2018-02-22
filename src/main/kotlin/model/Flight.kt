@@ -19,9 +19,9 @@ object Flight : IntIdTable() {
 
 data class flight(val name: String, val time: String, val location: Int, val vehicle: Int, val success: Boolean)
 
-class FlightDAO() {
+class FlightDAO {
 
-    val flights: HashMap<Int,flight> = hashMapOf()
+    val flights = hashMapOf<Int,flight>()
 
     init {
         transaction {

@@ -3,6 +3,9 @@ package main.kotlin
 import io.javalin.Javalin
 import org.jetbrains.exposed.sql.transactions.transaction
 import com.natpryce.konfig.*
+import controller.FlightController
+import controller.SiteController
+import controller.VehicleController
 import model.*
 import org.jetbrains.exposed.sql.*
 
@@ -32,32 +35,19 @@ fun main(args: Array<String>) {
             password = config[server.password],
             driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver")
 
-
-    val flightData = FlightDAO()
-
-    transaction {
-        logger.addLogger(StdOutSqlLogger)
-
-
-        (Flight innerJoin Site innerJoin Vehicle)
-                .selectAll().forEach {
-            println("${it[Flight.name]} - ${it[Site.name]} - ${it[Vehicle.name]} - ${it[Flight.time]}")
-        }
-
-    }
-
+    // Launch the app
     val app = Javalin.start(getHerokuPort())
-    app.get("/") { ctx -> ctx.result("Hello World") }
 
-    app.get("/flights") { ctx ->
-        ctx.json(flightData.flights)
-    }
-
-    app.get("/flights/:id") { ctx ->
-        ctx.json(flightData.findById(ctx.param("id")!!.toInt())!!)
-    }
+    // Start the flightController
+    FlightController(app)
+    SiteController(app)
+    VehicleController(app)
 }
 
+
+/**
+ * If running on heroku we need to get the port deployed by heroku instead of the default one
+ */
 fun getHerokuPort(): Int {
     val processBuilder = ProcessBuilder()
     if (processBuilder.environment().get("PORT") != null) {
